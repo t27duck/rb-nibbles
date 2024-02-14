@@ -132,7 +132,7 @@ def tick_gameplay(args)
     # Check for food collision
     if args.state.head_x == args.state.food[0] && args.state.head_y == args.state.food[1]
       args.state.food = spawn_food(args)
-      args.state.body.unshift([args.state.haed_x, args.state.haed_y])
+      args.state.body.unshift([args.state.head_x, args.state.head_y])
       args.state.score +=1
     end
   end
