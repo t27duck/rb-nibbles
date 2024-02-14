@@ -137,41 +137,36 @@ def tick_gameplay(args)
     end
   end
 
+  # Render head
+  args.outputs.sprites << {
+    x: GRID_START_X + (args.state.head_x * BLOCK_WIDTH),
+    y: GRID_START_Y + (args.state.head_y * BLOCK_WIDTH),
+    w: BLOCK_WIDTH,
+    h: BLOCK_WIDTH,
+    path: "sprites/head.png"
+  }
 
-  GRID_HEIGHT.times do |row|
-    GRID_WIDTH.times do |column|
-      if column == args.state.head_x && row == args.state.head_y
-        args.outputs.sprites << {
-          x: GRID_START_X + (column * BLOCK_WIDTH),
-          y: GRID_START_Y + (row * BLOCK_WIDTH),
-          w: BLOCK_WIDTH,
-          h: BLOCK_WIDTH,
-          path: "sprites/head.png"
-        }
-      end
+  # Render food
+  args.outputs.sprites << {
+    x: GRID_START_X + (args.state.food[0] * BLOCK_WIDTH),
+    y: GRID_START_Y + (args.state.food[1] * BLOCK_WIDTH),
+    w: BLOCK_WIDTH,
+    h: BLOCK_WIDTH,
+    path: "sprites/food.png"
+  }
 
-      if column == args.state.food[0] && row == args.state.food[1]
-        args.outputs.sprites << {
-          x: GRID_START_X + (column * BLOCK_WIDTH),
-          y: GRID_START_Y + (row * BLOCK_WIDTH),
-          w: BLOCK_WIDTH,
-          h: BLOCK_WIDTH,
-          path: "sprites/food.png"
-        }
-      end
-
-      if args.state.body.any? { |body_part| column == body_part[0] && row == body_part[1] }
-        args.outputs.sprites << {
-          x: GRID_START_X + (column * BLOCK_WIDTH),
-          y: GRID_START_Y + (row * BLOCK_WIDTH),
-          w: BLOCK_WIDTH,
-          h: BLOCK_WIDTH,
-          path: "sprites/body.png"
-        }
-      end
-    end
+  # Render body
+  args.state.body.each do |body_part|
+    args.outputs.sprites << {
+      x: GRID_START_X + (body_part[0] * BLOCK_WIDTH),
+      y: GRID_START_Y + (body_part[1] * BLOCK_WIDTH),
+      w: BLOCK_WIDTH,
+      h: BLOCK_WIDTH,
+      path: "sprites/body.png"
+    }
   end
 
+  # Render score
   args.outputs.labels  << {
     x: GRID_START_X,
     y: GRID_START_Y - 5,
