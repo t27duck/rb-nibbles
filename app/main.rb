@@ -7,15 +7,14 @@ BLOCK_WIDTH = 32
 MOVE_WAIT = 10
 INITIAL_BODY = 7
 
-COLOR_TEXT_LIGHT = { r: 255, g: 255, b: 255 }.freeze
-COLOR_TEXT_DARK = { r: 0, g: 0, b: 0 }.freeze
-COLOR_PLAYER = { r: 218, g: 214, b: 215 }.freeze
-COLOR_FOOD = { r: 173, g: 16, b: 53 }.freeze
-COLOR_GAME_FIELD = { r: 1, g: 1, b: 5 }.freeze
-COLOR_WALL = { r: 113, g: 114, b: 134 }.freeze
+COLOR_TEXT_DARK = { r: 58, g: 63, b: 51 }.freeze
+COLOR_PLAYER = { r: 58, g: 63, b: 51 }.freeze
+COLOR_FOOD = { r: 58, g: 63, b: 51 }.freeze
+COLOR_GAME_FIELD = { r: 149, g: 156, b: 119 }.freeze
+COLOR_WALL = { r: 107, g: 113, b: 87 }.freeze
 
 SHADOW_OFFSET = 4
-SHADOW_ALPHA = 150
+SHADOW_ALPHA = 75
 
 def tick(args)
   args.state.scene ||= "title"
@@ -87,7 +86,7 @@ def tick_title(args)
     text: "Nibbles",
     size_enum: 8,
     alignment_enum: 1
-  }.merge(COLOR_TEXT_LIGHT)
+  }.merge(COLOR_TEXT_DARK)
 
   args.outputs.labels << {
     x: (args.grid.w / 2),
@@ -95,7 +94,7 @@ def tick_title(args)
     text: "Press Spacebar to Start",
     size_enum: 4,
     alignment_enum: 1,
-  }.merge(COLOR_TEXT_LIGHT)
+  }.merge(COLOR_TEXT_DARK)
 
   if args.inputs.keyboard.key_down.space
     args.state.scene = "gameplay"
@@ -110,7 +109,7 @@ def tick_gameover(args)
     text: "Game Over",
     size_enum: 8,
     alignment_enum: 1
-  }.merge(COLOR_TEXT_LIGHT)
+  }.merge(COLOR_TEXT_DARK)
 
   args.outputs.labels << {
     x: (args.grid.w / 2),
@@ -118,7 +117,7 @@ def tick_gameover(args)
     text: "Score: #{args.state.score}",
     size_enum: 4,
     alignment_enum: 1
-  }.merge(COLOR_TEXT_LIGHT)
+  }.merge(COLOR_TEXT_DARK)
 
   args.outputs.labels << {
     x: (args.grid.w / 2),
@@ -126,7 +125,7 @@ def tick_gameover(args)
     text: "Press Spacebar to Play Again",
     size_enum: 4,
     alignment_enum: 1
-  }.merge(COLOR_TEXT_LIGHT)
+  }.merge(COLOR_TEXT_DARK)
 
   if args.inputs.keyboard.key_down.space
     args.state.scene = "gameplay"
@@ -190,48 +189,16 @@ def tick_gameplay(args)
     end
   end
 
+  # Render food shadow
+  args.outputs.solids << {
+    x: GRID_START_X + (args.state.food[0] * BLOCK_WIDTH) + SHADOW_OFFSET,
+    y: GRID_START_Y + (args.state.food[1] * BLOCK_WIDTH) - SHADOW_OFFSET,
+    w: BLOCK_WIDTH,
+    h: BLOCK_WIDTH,
+    a: SHADOW_ALPHA
+  }.merge(COLOR_FOOD)
 
-        # Render food shadow
-        args.outputs.solids << {
-          x: GRID_START_X + (args.state.food[0] * BLOCK_WIDTH) + SHADOW_OFFSET,
-          y: GRID_START_Y + (args.state.food[1] * BLOCK_WIDTH) - SHADOW_OFFSET,
-          w: BLOCK_WIDTH,
-          h: BLOCK_WIDTH,
-          a: SHADOW_ALPHA
-        }.merge(COLOR_FOOD)
-
-    # Render head shadow
-    args.outputs.solids << {
-      x: GRID_START_X + (args.state.head_x * BLOCK_WIDTH),
-      y: GRID_START_Y + (args.state.head_y * BLOCK_WIDTH),
-      w: BLOCK_WIDTH,
-      h: BLOCK_WIDTH
-    }.merge(COLOR_PLAYER)
-
-    # Render body shadow
-    args.state.body.each do |body_part|
-      args.outputs.solids << {
-        x: GRID_START_X + (body_part[0] * BLOCK_WIDTH) + SHADOW_OFFSET,
-        y: GRID_START_Y + (body_part[1] * BLOCK_WIDTH) - SHADOW_OFFSET,
-        w: BLOCK_WIDTH,
-        h: BLOCK_WIDTH,
-        a: SHADOW_ALPHA
-      }.merge(COLOR_PLAYER)
-    end
-
-
-    # Render food
-    args.outputs.solids << {
-      x: GRID_START_X + (args.state.food[0] * BLOCK_WIDTH),
-      y: GRID_START_Y + (args.state.food[1] * BLOCK_WIDTH),
-      w: BLOCK_WIDTH,
-      h: BLOCK_WIDTH
-    }.merge(COLOR_FOOD)
-
-
-
-
-  # Render head
+  # Render head shadow
   args.outputs.solids << {
     x: GRID_START_X + (args.state.head_x * BLOCK_WIDTH) + SHADOW_OFFSET,
     y: GRID_START_Y + (args.state.head_y * BLOCK_WIDTH) - SHADOW_OFFSET,
@@ -240,20 +207,43 @@ def tick_gameplay(args)
     a: SHADOW_ALPHA
   }.merge(COLOR_PLAYER)
 
-    # Render body
-    args.state.body.each do |body_part|
-      args.outputs.solids << {
-        x: GRID_START_X + (body_part[0] * BLOCK_WIDTH),
-        y: GRID_START_Y + (body_part[1] * BLOCK_WIDTH),
-        w: BLOCK_WIDTH,
-        h: BLOCK_WIDTH
-      }.merge(COLOR_PLAYER)
-    end
+  # Render body shadow
+  args.state.body.each do |body_part|
+    args.outputs.solids << {
+      x: GRID_START_X + (body_part[0] * BLOCK_WIDTH) + SHADOW_OFFSET,
+      y: GRID_START_Y + (body_part[1] * BLOCK_WIDTH) - SHADOW_OFFSET,
+      w: BLOCK_WIDTH,
+      h: BLOCK_WIDTH,
+      a: SHADOW_ALPHA
+    }.merge(COLOR_PLAYER)
+  end
+
+  # Render food
+  args.outputs.solids << {
+    x: GRID_START_X + (args.state.food[0] * BLOCK_WIDTH),
+    y: GRID_START_Y + (args.state.food[1] * BLOCK_WIDTH),
+    w: BLOCK_WIDTH,
+    h: BLOCK_WIDTH
+  }.merge(COLOR_FOOD)
+
+  # Render head
+  args.outputs.solids << {
+    x: GRID_START_X + (args.state.head_x * BLOCK_WIDTH) + 2,
+    y: GRID_START_Y + (args.state.head_y * BLOCK_WIDTH) + 2,
+    w: BLOCK_WIDTH - 4,
+    h: BLOCK_WIDTH - 4
+  }.merge(COLOR_PLAYER)
 
 
-
-
-
+  # Render body
+  args.state.body.each do |body_part|
+    args.outputs.solids << {
+      x: GRID_START_X + (body_part[0] * BLOCK_WIDTH) + 2,
+      y: GRID_START_Y + (body_part[1] * BLOCK_WIDTH) + 2,
+      w: BLOCK_WIDTH - 4,
+      h: BLOCK_WIDTH - 4
+    }.merge(COLOR_PLAYER)
+  end
 
   # Render score
   args.outputs.labels << {
