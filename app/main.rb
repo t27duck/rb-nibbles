@@ -8,6 +8,8 @@ INITIAL_BODY = 7
 COLOR_TEXT_LIGHT = { r: 255, g: 255, b: 255 }.freeze
 COLOR_TEXT_DARK = { r: 0, g: 0, b: 0 }.freeze
 COLOR_WALL = { r: 92, g: 120, b: 230 }.freeze
+COLOR_PLAYER = { r: 0, g: 251, b: 251 }.freeze
+COLOR_FOOD = { r: 0, g: 255, b: 0 }.freeze
 
 def tick(args)
   args.state.scene ||= "title"
@@ -126,22 +128,20 @@ def tick_gameplay(args)
   end
 
   # Render head
-  args.outputs.sprites << {
+  args.outputs.solids << {
     x: GRID_START_X + (args.state.head_x * BLOCK_WIDTH),
     y: GRID_START_Y + (args.state.head_y * BLOCK_WIDTH),
     w: BLOCK_WIDTH,
-    h: BLOCK_WIDTH,
-    path: "sprites/head.png"
-  }
+    h: BLOCK_WIDTH
+  }.merge(COLOR_PLAYER)
 
   # Render food
-  args.outputs.sprites << {
+  args.outputs.solids << {
     x: GRID_START_X + (args.state.food[0] * BLOCK_WIDTH),
     y: GRID_START_Y + (args.state.food[1] * BLOCK_WIDTH),
     w: BLOCK_WIDTH,
-    h: BLOCK_WIDTH,
-    path: "sprites/food.png"
-  }
+    h: BLOCK_WIDTH
+  }.merge(COLOR_FOOD)
 
   # Render body
   args.state.body.each do |body_part|
@@ -149,9 +149,8 @@ def tick_gameplay(args)
       x: GRID_START_X + (body_part[0] * BLOCK_WIDTH),
       y: GRID_START_Y + (body_part[1] * BLOCK_WIDTH),
       w: BLOCK_WIDTH,
-      h: BLOCK_WIDTH,
-      path: "sprites/body.png"
-    }
+      h: BLOCK_WIDTH
+    }.merge(COLOR_PLAYER)
   end
 
   # Render score
