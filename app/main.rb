@@ -5,6 +5,9 @@ GRID_START_Y = 40
 BLOCK_WIDTH = 28
 MOVE_WAIT = 10
 INITIAL_BODY = 7
+COLOR_TEXT_LIGHT = { r: 255, g: 255, b: 255 }.freeze
+COLOR_TEXT_DARK = { r: 0, g: 0, b: 0 }.freeze
+COLOR_WALL = { r: 92, g: 120, b: 230 }.freeze
 
 def tick(args)
   args.state.scene ||= "title"
@@ -18,11 +21,8 @@ def tick_title(args)
     y: (args.grid.h / 2),
     text: "Nibbles",
     size_enum: 8,
-    alignment_enum: 1,
-    r: 255,
-    g: 255,
-    b: 255
-  }
+    alignment_enum: 1
+  }.merge(COLOR_TEXT_LIGHT)
 
   args.outputs.labels << {
     x: (args.grid.w / 2),
@@ -30,10 +30,7 @@ def tick_title(args)
     text: "Press Spacebar to Start",
     size_enum: 4,
     alignment_enum: 1,
-    r: 255,
-    g: 255,
-    b: 255
-  }
+  }.merge(COLOR_TEXT_LIGHT)
 
   if args.inputs.keyboard.key_down.space
     args.state.scene = "gameplay"
@@ -47,33 +44,24 @@ def tick_gameover(args)
     y: (args.grid.h / 2),
     text: "Game Over",
     size_enum: 8,
-    alignment_enum: 1,
-    r: 255,
-    g: 255,
-    b: 255
-  }
+    alignment_enum: 1
+  }.merge(COLOR_TEXT_LIGHT)
 
   args.outputs.labels << {
     x: (args.grid.w / 2),
     y: (args.grid.h / 2) - 50,
     text: "Score: #{args.state.score}",
     size_enum: 4,
-    alignment_enum: 1,
-    r: 255,
-    g: 255,
-    b: 255
-  }
+    alignment_enum: 1
+  }.merge(COLOR_TEXT_LIGHT)
 
   args.outputs.labels << {
     x: (args.grid.w / 2),
     y: (args.grid.h / 2) - 150,
     text: "Press Spacebar to Play Again",
     size_enum: 4,
-    alignment_enum: 1,
-    r: 255,
-    g: 255,
-    b: 255
-  }
+    alignment_enum: 1
+  }.merge(COLOR_TEXT_LIGHT)
 
   if args.inputs.keyboard.key_down.space
     args.state.scene = "gameplay"
@@ -167,13 +155,13 @@ def tick_gameplay(args)
   end
 
   # Render score
-  args.outputs.labels  << {
+  args.outputs.labels << {
     x: GRID_START_X,
     y: GRID_START_Y - 5,
     text: "Score: #{args.state.score}",
     size_enum: 5,
     alignment_enum: 1
-  }
+  }.merge(COLOR_TEXT_DARK)
 end
 
 # Determines the location of the food.
@@ -230,22 +218,16 @@ def draw_field(args)
     x: 0,
     y: 0,
     w: args.grid.w,
-    h: args.grid.h,
-    r: 92,
-    g: 120,
-    b: 230,
-  }
+    h: args.grid.h
+  }.merge(COLOR_WALL)
 
   # Gameplay area
   args.outputs.solids << {
     x: GRID_START_X,
     y: GRID_START_Y,
     w: (BLOCK_WIDTH * GRID_WIDTH),
-    h: (BLOCK_WIDTH * GRID_HEIGHT),
-    r: 0,
-    g: 0,
-    b: 0,
-  }
+    h: (BLOCK_WIDTH * GRID_HEIGHT)
+  }.merge(COLOR_TEXT_DARK)
 end
 
 $gtk.reset
