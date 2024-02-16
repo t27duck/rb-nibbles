@@ -1,20 +1,83 @@
-GRID_WIDTH = 43
-GRID_HEIGHT = 23
-GRID_START_X = 40
-GRID_START_Y = 40
-BLOCK_WIDTH = 28
+GRID_WIDTH = 38
+GRID_HEIGHT = 20
+GRID_START_X = 32
+GRID_START_Y = 32
+GRID_Y_OFFSET_MAGIC_NUMBER = 16
+BLOCK_WIDTH = 32
 MOVE_WAIT = 10
 INITIAL_BODY = 7
+
 COLOR_TEXT_LIGHT = { r: 255, g: 255, b: 255 }.freeze
 COLOR_TEXT_DARK = { r: 0, g: 0, b: 0 }.freeze
-COLOR_WALL = { r: 92, g: 120, b: 230 }.freeze
-COLOR_PLAYER = { r: 0, g: 251, b: 251 }.freeze
-COLOR_FOOD = { r: 0, g: 255, b: 0 }.freeze
+COLOR_PLAYER = { r: 218, g: 214, b: 215 }.freeze
+COLOR_FOOD = { r: 173, g: 16, b: 53 }.freeze
+COLOR_GAME_FIELD = { r: 1, g: 1, b: 5 }.freeze
+COLOR_WALL = { r: 113, g: 114, b: 134 }.freeze
+
+SHADOW_OFFSET = 4
+SHADOW_ALPHA = 150
 
 def tick(args)
   args.state.scene ||= "title"
-  draw_field(args)
+  # Gameplay area
+  args.outputs.solids << {
+    x: GRID_START_X,
+    y: GRID_START_Y,
+    w: (BLOCK_WIDTH * GRID_WIDTH),
+    h: (BLOCK_WIDTH * GRID_HEIGHT)
+  }.merge(COLOR_GAME_FIELD)
+
+  # Top side
+  args.outputs.solids << {
+    x: 0,
+    y: args.grid.h - BLOCK_WIDTH - GRID_Y_OFFSET_MAGIC_NUMBER,
+    w: args.grid.w - BLOCK_WIDTH,
+    h: BLOCK_WIDTH + 16
+  }.merge(COLOR_WALL)
+
+  # Top side shadow
+  args.outputs.solids << {
+    x: 0 + SHADOW_OFFSET,
+    y: args.grid.h - BLOCK_WIDTH - GRID_Y_OFFSET_MAGIC_NUMBER - SHADOW_OFFSET,
+    w: args.grid.w - BLOCK_WIDTH,
+    h: BLOCK_WIDTH + 16,
+    a: SHADOW_ALPHA
+  }.merge(COLOR_WALL)
+
+  # Left side
+  args.outputs.solids << {
+    x: 0,
+    y: GRID_START_Y,
+    w: BLOCK_WIDTH,
+    h: args.grid.h - GRID_START_Y - BLOCK_WIDTH - GRID_Y_OFFSET_MAGIC_NUMBER
+  }.merge(COLOR_WALL)
+
+  # Left side shadow
+  args.outputs.solids << {
+    x: 0 + SHADOW_OFFSET,
+    y: GRID_START_Y - SHADOW_OFFSET,
+    w: BLOCK_WIDTH,
+    h: args.grid.h - GRID_START_Y - BLOCK_WIDTH - GRID_Y_OFFSET_MAGIC_NUMBER,
+    a: SHADOW_ALPHA
+  }.merge(COLOR_WALL)
+
   send("tick_#{args.state.scene}", args)
+
+  # Bottom side
+  args.outputs.solids << {
+    x: 0,
+    y: 0,
+    w: args.grid.w,
+    h: GRID_START_Y
+  }.merge(COLOR_WALL)
+
+  # Right side
+  args.outputs.solids << {
+    x: args.grid.w - GRID_START_X,
+    y: GRID_START_Y,
+    w: BLOCK_WIDTH,
+    h: args.grid.h
+  }.merge(COLOR_WALL)
 end
 
 def tick_title(args)
@@ -89,10 +152,11 @@ def tick_gameplay(args)
   if args.state.move_wait <=0
     args.state.lock_movement = false
     args.state.move_wait = MOVE_WAIT
-    original_xy = [args.state.head_x, args.state.head_y]
-    original_body = args.state.body.dup
-    args.state.body.pop
-    args.state.body.unshift(original_xy)
+
+    # Append segment before moving head to start moving the body
+    args.state.body.unshift([args.state.head_x, args.state.head_y])
+
+    # Move head one position forward
     case args.state.direction
     when "up"
       args.state.head_y += 1
@@ -107,51 +171,89 @@ def tick_gameplay(args)
     # Check for wall collision
     if args.state.head_x < 0 || args.state.head_x >= GRID_WIDTH ||
       args.state.head_y < 0 || args.state.head_y >= GRID_HEIGHT
-      args.state.head_x, args.state.head_y = original_xy
-      args.state.body = original_body
       args.state.scene = "gameover"
     end
 
     # Check for body collision
     if args.state.body.any? { |body_part| args.state.head_x == body_part[0] && args.state.head_y == body_part[1] }
-      args.state.head_x, args.state.head_y = original_xy
-      args.state.body = original_body
       args.state.scene = "gameover"
     end
 
     # Check for food collision
     if args.state.head_x == args.state.food[0] && args.state.head_y == args.state.food[1]
       args.state.food = spawn_food(args)
-      args.state.body.unshift([args.state.head_x, args.state.head_y])
       args.state.score +=1
+    else
+      # No collision means no expanding body
+      # Remove segment from the end to complete moving the body
+      args.state.body.pop
     end
   end
 
-  # Render head
-  args.outputs.solids << {
-    x: GRID_START_X + (args.state.head_x * BLOCK_WIDTH),
-    y: GRID_START_Y + (args.state.head_y * BLOCK_WIDTH),
-    w: BLOCK_WIDTH,
-    h: BLOCK_WIDTH
-  }.merge(COLOR_PLAYER)
 
-  # Render food
-  args.outputs.solids << {
-    x: GRID_START_X + (args.state.food[0] * BLOCK_WIDTH),
-    y: GRID_START_Y + (args.state.food[1] * BLOCK_WIDTH),
-    w: BLOCK_WIDTH,
-    h: BLOCK_WIDTH
-  }.merge(COLOR_FOOD)
+        # Render food shadow
+        args.outputs.solids << {
+          x: GRID_START_X + (args.state.food[0] * BLOCK_WIDTH) + SHADOW_OFFSET,
+          y: GRID_START_Y + (args.state.food[1] * BLOCK_WIDTH) - SHADOW_OFFSET,
+          w: BLOCK_WIDTH,
+          h: BLOCK_WIDTH,
+          a: SHADOW_ALPHA
+        }.merge(COLOR_FOOD)
 
-  # Render body
-  args.state.body.each do |body_part|
-    args.outputs.sprites << {
-      x: GRID_START_X + (body_part[0] * BLOCK_WIDTH),
-      y: GRID_START_Y + (body_part[1] * BLOCK_WIDTH),
+    # Render head shadow
+    args.outputs.solids << {
+      x: GRID_START_X + (args.state.head_x * BLOCK_WIDTH),
+      y: GRID_START_Y + (args.state.head_y * BLOCK_WIDTH),
       w: BLOCK_WIDTH,
       h: BLOCK_WIDTH
     }.merge(COLOR_PLAYER)
-  end
+
+    # Render body shadow
+    args.state.body.each do |body_part|
+      args.outputs.solids << {
+        x: GRID_START_X + (body_part[0] * BLOCK_WIDTH) + SHADOW_OFFSET,
+        y: GRID_START_Y + (body_part[1] * BLOCK_WIDTH) - SHADOW_OFFSET,
+        w: BLOCK_WIDTH,
+        h: BLOCK_WIDTH,
+        a: SHADOW_ALPHA
+      }.merge(COLOR_PLAYER)
+    end
+
+
+    # Render food
+    args.outputs.solids << {
+      x: GRID_START_X + (args.state.food[0] * BLOCK_WIDTH),
+      y: GRID_START_Y + (args.state.food[1] * BLOCK_WIDTH),
+      w: BLOCK_WIDTH,
+      h: BLOCK_WIDTH
+    }.merge(COLOR_FOOD)
+
+
+
+
+  # Render head
+  args.outputs.solids << {
+    x: GRID_START_X + (args.state.head_x * BLOCK_WIDTH) + SHADOW_OFFSET,
+    y: GRID_START_Y + (args.state.head_y * BLOCK_WIDTH) - SHADOW_OFFSET,
+    w: BLOCK_WIDTH,
+    h: BLOCK_WIDTH,
+    a: SHADOW_ALPHA
+  }.merge(COLOR_PLAYER)
+
+    # Render body
+    args.state.body.each do |body_part|
+      args.outputs.solids << {
+        x: GRID_START_X + (body_part[0] * BLOCK_WIDTH),
+        y: GRID_START_Y + (body_part[1] * BLOCK_WIDTH),
+        w: BLOCK_WIDTH,
+        h: BLOCK_WIDTH
+      }.merge(COLOR_PLAYER)
+    end
+
+
+
+
+
 
   # Render score
   args.outputs.labels << {
@@ -170,9 +272,9 @@ def spawn_food(args)(args)
     y = rand(GRID_HEIGHT)
 
     ok = args.state.body.none? { |body_part| x == body_part[0] && y == body_part[1] } &&
-         (x == args.state.head_x && y == args.state.head_y)
+         (x != args.state.head_x && y != args.state.head_y)
 
-    return [x, y] unless ok
+    return [x, y] if ok
   end
 end
 
@@ -208,25 +310,6 @@ def determine_direction(args)
   args.state.direction = "left" if args.inputs.left && args.state.direction != "right"
 
   args.state.lock_movement = true if current_direction != args.state.direction
-end
-
-# Creates the gamefield of "background"
-def draw_field(args)
-  # Whole window, represents out of bounds after all graphics draw.
-  args.outputs.solids << {
-    x: 0,
-    y: 0,
-    w: args.grid.w,
-    h: args.grid.h
-  }.merge(COLOR_WALL)
-
-  # Gameplay area
-  args.outputs.solids << {
-    x: GRID_START_X,
-    y: GRID_START_Y,
-    w: (BLOCK_WIDTH * GRID_WIDTH),
-    h: (BLOCK_WIDTH * GRID_HEIGHT)
-  }.merge(COLOR_TEXT_DARK)
 end
 
 $gtk.reset
