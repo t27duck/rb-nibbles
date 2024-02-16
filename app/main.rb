@@ -1,6 +1,6 @@
-GRID_WIDTH = 41
+GRID_WIDTH = 43
 GRID_HEIGHT = 23
-GRID_START_X = 74
+GRID_START_X = 40
 GRID_START_Y = 40
 BLOCK_WIDTH = 28
 MOVE_WAIT = 10
@@ -159,7 +159,7 @@ def tick_gameplay(args)
     y: GRID_START_Y - 5,
     text: "Score: #{args.state.score}",
     size_enum: 5,
-    alignment_enum: 1
+    anchor_x: 0
   }.merge(COLOR_TEXT_DARK)
 end
 
