@@ -18,6 +18,20 @@ class Player
     body
   end
 
+  def self.change_direction_on_input(game)
+    # Prevents constant change in direction until the head moves.
+    return if game.state.lock_movement == true
+    current_direction = game.state.direction
+
+    # Prevent from moving in the opposite direction.
+    game.state.direction = "up" if game.inputs.up && current_direction != "down"
+    game.state.direction = "right" if game.inputs.right && current_direction != "left"
+    game.state.direction = "down" if game.inputs.down && current_direction != "up"
+    game.state.direction = "left" if game.inputs.left && current_direction != "right"
+
+    game.state.lock_movement = true if current_direction != game.state.direction
+  end
+
   def self.render_head(game)
     game.outputs.solids << {
       x: GRID_START_X + (game.state.head_x * BLOCK_WIDTH) + 2,

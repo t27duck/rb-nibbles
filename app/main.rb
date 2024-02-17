@@ -20,6 +20,7 @@ require "app/stage"
 require "app/player"
 require "app/food"
 require "app/collision"
+require "app/scene"
 
 def tick(game)
   game.state.scene ||= "title"
@@ -35,60 +36,18 @@ def tick(game)
 end
 
 def tick_title(game)
-  game.outputs.labels << {
-    x: (game.grid.w / 2),
-    y: (game.grid.h / 2),
-    text: "Nibbles",
-    size_enum: 8,
-    alignment_enum: 1
-  }.merge(COLOR_TEXT_DARK)
+  Scene.render_title(game)
 
-  game.outputs.labels << {
-    x: (game.grid.w / 2),
-    y: (game.grid.h / 2) - 50,
-    text: "Press Spacebar to Start",
-    size_enum: 4,
-    alignment_enum: 1,
-  }.merge(COLOR_TEXT_DARK)
-
-  if game.inputs.keyboard.key_down.space
-    game.state.scene = "gameplay"
-    reset_gameplay(game)
-  end
+  reset_and_start_game(game) if game.inputs.keyboard.key_down.space
 end
 
 def tick_gameover(game)
-  game.outputs.labels << {
-    x: (game.grid.w / 2),
-    y: (game.grid.h / 2),
-    text: "Game Over",
-    size_enum: 8,
-    alignment_enum: 1
-  }.merge(COLOR_TEXT_DARK)
+  Scene.render_gameover(game)
 
-  game.outputs.labels << {
-    x: (game.grid.w / 2),
-    y: (game.grid.h / 2) - 50,
-    text: "Score: #{game.state.score}",
-    size_enum: 4,
-    alignment_enum: 1
-  }.merge(COLOR_TEXT_DARK)
-
-  game.outputs.labels << {
-    x: (game.grid.w / 2),
-    y: (game.grid.h / 2) - 150,
-    text: "Press Spacebar to Play Again",
-    size_enum: 4,
-    alignment_enum: 1
-  }.merge(COLOR_TEXT_DARK)
-
-  if game.inputs.keyboard.key_down.space
-    game.state.scene = "gameplay"
-    reset_gameplay(game)
-  end
+  reset_and_start_game(game) if game.inputs.keyboard.key_down.space
 end
 
-def reset_gameplay(game)
+def reset_and_start_game(game)
   game.state.head_x = 8
   game.state.head_y = 4
   game.state.direction = "right"
@@ -97,10 +56,11 @@ def reset_gameplay(game)
   game.state.body = Player.generate_body_segments(game)
   game.state.food = Food.determine_new_coordinates(game)
   game.state.score = 0
+  game.state.scene = "gameplay"
 end
 
 def tick_gameplay(game)
-  determine_direction(game)
+  Player.change_direction_on_input(game)
 
   game.state.move_wait -= 1
   if game.state.move_wait <=0
@@ -122,12 +82,9 @@ def tick_gameplay(game)
       game.state.head_x -= 1
     end
 
-    if Collision.wall?(game)
+    if Collision.wall?(game) || Collision.body?(game)
       game.state.scene = "gameover"
-    end
-
-    if Collision.body?(game)
-      game.state.scene = "gameover"
+      return
     end
 
     if Collision.food?(game)
@@ -151,20 +108,6 @@ def tick_gameplay(game)
   Player.render_body(game)
 
   Stage.render_score(game)
-end
-
-# Updates direction based on user input.
-def determine_direction(game)
-  # Prevents constant change in direction until the head moves.
-  return if game.state.lock_movement == true
-  current_direction = game.state.direction
-
-  game.state.direction = "up" if game.inputs.up && game.state.direction != "down"
-  game.state.direction = "right" if game.inputs.right  && game.state.direction != "left"
-  game.state.direction = "down" if game.inputs.down && game.state.direction != "up"
-  game.state.direction = "left" if game.inputs.left && game.state.direction != "right"
-
-  game.state.lock_movement = true if current_direction != game.state.direction
 end
 
 $gtk.reset
