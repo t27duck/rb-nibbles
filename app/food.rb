@@ -13,19 +13,19 @@ class Food
 
   def self.render(game)
     game.outputs.solids << {
-      x: GRID_START_X + (game.state.food[0] * BLOCK_WIDTH),
-      y: GRID_START_Y + (game.state.food[1] * BLOCK_WIDTH),
-      w: BLOCK_WIDTH,
-      h: BLOCK_WIDTH
+      x: GRID_START_X + (game.state.food[0] * BLOCK_WIDTH) + 4,
+      y: GRID_START_Y + (game.state.food[1] * BLOCK_WIDTH) + 4,
+      w: BLOCK_WIDTH - 8,
+      h: BLOCK_WIDTH - 8
     }.merge(COLOR_FOOD)
   end
 
   def self.render_shadow(game)
     game.outputs.solids << {
-      x: GRID_START_X + (game.state.food[0] * BLOCK_WIDTH) + SHADOW_OFFSET,
-      y: GRID_START_Y + (game.state.food[1] * BLOCK_WIDTH) - SHADOW_OFFSET,
-      w: BLOCK_WIDTH,
-      h: BLOCK_WIDTH,
+      x: GRID_START_X + (game.state.food[0] * BLOCK_WIDTH) + SHADOW_OFFSET + 4,
+      y: GRID_START_Y + (game.state.food[1] * BLOCK_WIDTH) - SHADOW_OFFSET + 4,
+      w: BLOCK_WIDTH - 8,
+      h: BLOCK_WIDTH - 8,
       a: SHADOW_ALPHA
     }.merge(COLOR_FOOD)
   end

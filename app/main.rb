@@ -98,15 +98,11 @@ def tick_gameplay(game)
   end
 
   Food.render_shadow(game)
-
   Player.render_head_shadow(game)
   Player.render_body_shadow(game)
-
   Food.render(game)
-
   Player.render_head(game)
   Player.render_body(game)
-
   Stage.render_score(game)
 end
 
