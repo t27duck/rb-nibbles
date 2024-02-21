@@ -26,14 +26,9 @@ require "app/block"
 def tick(game)
   game.state.scene ||= "title"
 
-  Stage.render_gamefield(game)
-  Stage.render_top(game)
-  Stage.render_left(game)
-
-  send("tick_#{game.state.scene}", game)
-
-  Stage.render_bottom(game)
-  Stage.render_right(game)
+  Stage.render(game) do
+    send("tick_#{game.state.scene}", game)
+  end
 end
 
 def tick_title(game)

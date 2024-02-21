@@ -1,4 +1,13 @@
 class Stage
+  def self.render(game, &block)
+    render_gamefield(game)
+    render_top(game)
+    render_left(game)
+    yield block
+    render_bottom(game)
+    render_right(game)
+  end
+
   def self.render_left(game)
     game.outputs.solids << {
       x: 0,
