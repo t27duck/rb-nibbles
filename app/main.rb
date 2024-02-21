@@ -21,6 +21,7 @@ require "app/player"
 require "app/food"
 require "app/collision"
 require "app/scene"
+require "app/block"
 
 def tick(game)
   game.state.scene ||= "title"
@@ -48,8 +49,7 @@ def tick_gameover(game)
 end
 
 def reset_and_start_game(game)
-  game.state.head_x = 8
-  game.state.head_y = 4
+  game.state.head = [8, 4]
   game.state.direction = "right"
   game.state.move_wait = MOVE_WAIT
   game.state.lock_movement = false
@@ -68,18 +68,18 @@ def tick_gameplay(game)
     game.state.move_wait = MOVE_WAIT
 
     # Append segment before moving head to start moving the body
-    game.state.body.unshift([game.state.head_x, game.state.head_y])
+    game.state.body.unshift(game.state.head.dup)
 
     # Move head one position forward
     case game.state.direction
     when "up"
-      game.state.head_y += 1
+      game.state.head[1] += 1
     when "right"
-      game.state.head_x += 1
+      game.state.head[0] += 1
     when "down"
-      game.state.head_y -= 1
+      game.state.head[1] -= 1
     when "left"
-      game.state.head_x -= 1
+      game.state.head[0] -= 1
     end
 
     if Collision.wall?(game) || Collision.body?(game)
@@ -97,12 +97,10 @@ def tick_gameplay(game)
     end
   end
 
-  Food.render_shadow(game)
-  Player.render_head_shadow(game)
-  Player.render_body_shadow(game)
-  Food.render(game)
-  Player.render_head(game)
-  Player.render_body(game)
+
+  Block.render(game, game.state.head)
+  Block.render(game, game.state.body)
+  Block.render(game, game.state.food, size: :small)
   Stage.render_score(game)
 end
 
