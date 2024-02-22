@@ -1,28 +1,27 @@
-TITLE_X_START = 5
+TITLE_X_START = 6
 TITLE_Y_START = 12
 
 TITLE_N_START = 0
-TITLE_I_START = 6
-TITLE_B1_START = 8
-TITLE_B2_START = 12
-TITLE_L_START = 16
-TITLE_E_START = 20
-TITLE_S_START = 24
-# [TITLE_X_START + 0, TITLE_Y_START + 0]
+TITLE_I_START = 5
+TITLE_B1_START = 7
+TITLE_B2_START = 11
+TITLE_L_START = 15
+TITLE_E_START = 19
+TITLE_S_START = 23
+
 TITLE = [
   [TITLE_X_START + TITLE_N_START + 0, TITLE_Y_START + 0],
   [TITLE_X_START + TITLE_N_START + 0, TITLE_Y_START + 1],
   [TITLE_X_START + TITLE_N_START + 0, TITLE_Y_START + 2],
   [TITLE_X_START + TITLE_N_START + 0, TITLE_Y_START + 3],
   [TITLE_X_START + TITLE_N_START + 0, TITLE_Y_START + 4],
-  [TITLE_X_START + TITLE_N_START + 1, TITLE_Y_START + 3],
-  [TITLE_X_START + TITLE_N_START + 2, TITLE_Y_START + 2],
+  [TITLE_X_START + TITLE_N_START + 1, TITLE_Y_START + 2],
+  [TITLE_X_START + TITLE_N_START + 2, TITLE_Y_START + 1],
+  [TITLE_X_START + TITLE_N_START + 3, TITLE_Y_START + 0],
   [TITLE_X_START + TITLE_N_START + 3, TITLE_Y_START + 1],
-  [TITLE_X_START + TITLE_N_START + 4, TITLE_Y_START + 0],
-  [TITLE_X_START + TITLE_N_START + 4, TITLE_Y_START + 1],
-  [TITLE_X_START + TITLE_N_START + 4, TITLE_Y_START + 2],
-  [TITLE_X_START + TITLE_N_START + 4, TITLE_Y_START + 3],
-  [TITLE_X_START + TITLE_N_START + 4, TITLE_Y_START + 4],
+  [TITLE_X_START + TITLE_N_START + 3, TITLE_Y_START + 2],
+  [TITLE_X_START + TITLE_N_START + 3, TITLE_Y_START + 3],
+  [TITLE_X_START + TITLE_N_START + 3, TITLE_Y_START + 4],
 
   [TITLE_X_START + TITLE_I_START + 0, TITLE_Y_START + 0],
   [TITLE_X_START + TITLE_I_START + 0, TITLE_Y_START + 1],
@@ -91,6 +90,8 @@ TITLE = [
 
 class Scene
   def self.render_title(game)
+    Block.render(game, TITLE)
+
     game.outputs.labels << {
       x: (game.grid.w / 2),
       y: (game.grid.h / 2) - 50,
@@ -98,11 +99,11 @@ class Scene
       size_enum: 4,
       alignment_enum: 1,
     }.merge(COLOR_TEXT_DARK)
-
-    Block.render(game, TITLE)
   end
 
   def self.render_gameover(game)
+    Block.render(game, TITLE)
+
     game.outputs.labels << {
       x: (game.grid.w / 2),
       y: (game.grid.h / 2),
