@@ -1,7 +1,8 @@
 class Collision
   def self.wall?(game)
     game.state.head[0] < 0 || game.state.head[0] >= GRID_WIDTH ||
-      game.state.head[1] < 0 || game.state.head[1] >= GRID_HEIGHT
+      game.state.head[1] < 0 || game.state.head[1] >= GRID_HEIGHT ||
+      WALLS[game.state.level].any? { |wall_cord| game.state.head[0] == wall_cord[0] && game.state.head[1] == wall_cord[1] }
   end
 
   def self.body?(game)

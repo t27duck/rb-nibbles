@@ -1,3 +1,9 @@
+WALLS = {
+  1 => [[8, 9], [8, 10], [8, 11], [8, 12], [8, 13], [8, 14]],
+  2 => [],
+  3 => []
+}
+
 class Stage
   def self.render(game, &block)
     render_gamefield(game)

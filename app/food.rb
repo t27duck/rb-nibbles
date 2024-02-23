@@ -5,6 +5,7 @@ class Food
       y = rand(GRID_HEIGHT)
 
       ok = game.state.body.none? { |body_part| x == body_part[0] && y == body_part[1] } &&
+           WALLS[game.state.level].none? { |wall_cord| x == wall_cord[0] && y == wall_cord[1] } &&
            (x != game.state.head[0] && y != game.state.head[1])
 
       return [x, y] if ok

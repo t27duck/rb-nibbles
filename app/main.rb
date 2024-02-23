@@ -44,6 +44,7 @@ def tick_gameover(game)
 end
 
 def reset_and_start_game(game)
+  game.state.level ||= 1
   game.state.head = [8, 4]
   game.state.direction = "right"
   game.state.move_wait = MOVE_WAIT
@@ -96,6 +97,7 @@ def tick_gameplay(game)
   Block.render(game, game.state.head)
   Block.render(game, game.state.body)
   Block.render(game, game.state.food, size: :small)
+  Block.render(game, WALLS[game.state.level], size: :full, color: COLOR_WALL)
   Stage.render_score(game)
 end
 
