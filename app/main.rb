@@ -4,7 +4,8 @@ GRID_START_X = 32
 GRID_START_Y = 32
 GRID_Y_OFFSET_MAGIC_NUMBER = 16
 BLOCK_WIDTH = 32
-MOVE_WAIT = 10
+MOVE_WAIT = 10 # Frames
+COUNTDOWN_WAIT = 60 # Frames
 INITIAL_BODY = 7
 
 COLOR_TEXT_DARK = { r: 58, g: 63, b: 51 }.freeze
@@ -52,7 +53,23 @@ def reset_and_start_game(game)
   game.state.body = Player.generate_body_segments(game)
   game.state.food = Food.determine_new_coordinates(game)
   game.state.score = 0
-  game.state.scene = "gameplay"
+  game.state.scene = "countdown"
+  game.state.countdown = 2
+  game.state.countdown_wait = COUNTDOWN_WAIT
+end
+
+def tick_countdown(game)
+  game.state.countdown_wait -= 1
+  if game.state.countdown_wait <= 0
+    game.state.countdown -= 1
+    if game.state.countdown < 0
+      game.state.scene = "gameplay"
+      return
+    end
+    game.state.countdown_wait = COUNTDOWN_WAIT
+  end
+
+  Scene.render_countdown(game)
 end
 
 def tick_gameplay(game)
