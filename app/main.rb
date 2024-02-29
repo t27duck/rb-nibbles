@@ -20,7 +20,7 @@ SHADOW_ALPHA = 75
 WALLS = {
   1 => [],
   2 => 22.times.to_a.map{ |x| [(x + 1 + 7), 10] } + 22.times.to_a.map{ |x| [(x + 1 + 7), 9] },
-  3 => 9.times.to_a.map{ |y| [5 , (y + 1 + 5)] } + 9.times.to_a.map{ |y| [31 , (y + 1 + 5)] }
+  3 => 9.times.to_a.map{ |y| [5 , (y + 1 + 5)] } + 9.times.to_a.map{ |y| [32 , (y + 1 + 5)] }
 }
 
 require "app/stage"
