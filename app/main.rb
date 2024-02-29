@@ -17,6 +17,12 @@ COLOR_WALL = { r: 107, g: 113, b: 87 }.freeze
 SHADOW_OFFSET = 4
 SHADOW_ALPHA = 75
 
+WALLS = {
+  1 => [],
+  2 => 22.times.to_a.map{ |x| [(x + 1 + 7), 10] } + 22.times.to_a.map{ |x| [(x + 1 + 7), 9] },
+  3 => 9.times.to_a.map{ |y| [5 , (y + 1 + 5)] } + 9.times.to_a.map{ |y| [31 , (y + 1 + 5)] }
+}
+
 require "app/stage"
 require "app/player"
 require "app/food"
@@ -45,7 +51,7 @@ def tick_gameover(game)
 end
 
 def reset_and_start_game(game)
-  game.state.level ||= 1
+  game.state.level ||= 1 # Failsafe
   game.state.head = [8, 4]
   game.state.direction = "right"
   game.state.move_wait = MOVE_WAIT

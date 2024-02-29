@@ -135,13 +135,7 @@ class Scene
   def self.render_title(game)
     Block.render(game, TITLE)
 
-    game.outputs.labels << {
-      x: (game.grid.w / 2),
-      y: (game.grid.h / 2) - 50,
-      text: "Press Spacebar to Start",
-      size_enum: 4,
-      alignment_enum: 1,
-    }.merge(COLOR_TEXT_DARK)
+    render_level_menu(game)
   end
 
   def self.render_countdown(game)
@@ -153,24 +147,51 @@ class Scene
 
     game.outputs.labels << {
       x: (game.grid.w / 2),
-      y: (game.grid.h / 2),
+      y: (game.grid.h / 2) + 10,
       text: "Game Over",
       size_enum: 8,
       alignment_enum: 1
     }.merge(COLOR_TEXT_DARK)
 
+    render_level_menu(game)
+
     game.outputs.labels << {
       x: (game.grid.w / 2),
-      y: (game.grid.h / 2) - 50,
-      text: "Score: #{game.state.score}",
+      y: (game.grid.h / 2) - 100,
+      text: "Final Score: #{game.state.score}",
       size_enum: 4,
       alignment_enum: 1
     }.merge(COLOR_TEXT_DARK)
+  end
+
+  def self.render_level_menu(game)
+    game.state.level ||= 1
+
+    if game.inputs.keyboard.key_down.right || game.inputs.keyboard.key_down.d
+      game.state.level += 1
+      game.state.level = 1 if game.state.level > 3
+    end
+
+    if game.inputs.keyboard.key_down.left || game.inputs.keyboard.key_down.a
+      game.state.level -= 1
+      game.state.level = 3 if game.state.level < 1
+    end
+
+    3.times do |i|
+      text = game.state.level == (i + 1) ? "< Level #{i + 1} >" : "Level #{i + 1}"
+      game.outputs.labels << {
+        x: (game.grid.w / 4) * (i + 1),
+        y: (game.grid.h / 2) - 50,
+        text: text,
+        size_enum: 4,
+        alignment_enum: 1
+      }.merge(COLOR_TEXT_DARK)
+    end
 
     game.outputs.labels << {
       x: (game.grid.w / 2),
       y: (game.grid.h / 2) - 150,
-      text: "Press Spacebar to Play Again",
+      text: "Use Arrows/WASD to move. Press SPACEBAR to start",
       size_enum: 4,
       alignment_enum: 1
     }.merge(COLOR_TEXT_DARK)
