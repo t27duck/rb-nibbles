@@ -1,5 +1,8 @@
 class Food
+  MAX_FOOD_SPAWN_ATTEMPTS = GRID_WIDTH * GRID_HEIGHT
+
   def self.determine_new_coordinates(game)
+    attempts = 0
     loop do
       x = rand(GRID_WIDTH)
       y = rand(GRID_HEIGHT)
@@ -9,6 +12,9 @@ class Food
            (x != game.state.head[0] && y != game.state.head[1])
 
       return [x, y] if ok
+
+      attempts += 1
+      return [] if attempts > MAX_FOOD_SPAWN_ATTEMPTS
     end
   end
 end

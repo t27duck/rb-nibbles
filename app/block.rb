@@ -1,10 +1,10 @@
-BLOCK_SIZES = {
-  small: [4, 4],
-  normal: [2, 0],
-  full: [0, 0]
-}
-
 class Block
+  BLOCK_SIZES = {
+    small: [4, 4],
+    normal: [2, 0],
+    full: [0, 0]
+  }
+
   def self.render(game, cords, size: :normal, color: COLOR_PLAYER)
     inner_offset, shadow_offset = BLOCK_SIZES[size]
     cords = [cords] unless cords[0].is_a?(Array)
