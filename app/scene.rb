@@ -157,7 +157,7 @@ class Scene
 
     game.outputs.labels << {
       x: (game.grid.w / 2),
-      y: (game.grid.h / 2) - 100,
+      y: (game.grid.h / 2) - 50,
       text: "Final Score: #{game.state.score}",
       size_enum: 4,
       alignment_enum: 1
@@ -177,11 +177,19 @@ class Scene
       game.state.level = 3 if game.state.level < 1
     end
 
+    game.outputs.labels << {
+      x: (game.grid.w / 2),
+      y: (game.grid.h / 2) - 100,
+      text: "Select Level",
+      size_enum: 4,
+      alignment_enum: 1
+    }.merge(COLOR_TEXT_DARK)
+
     3.times do |i|
       text = game.state.level == (i + 1) ? "< Level #{i + 1} >" : "Level #{i + 1}"
       game.outputs.labels << {
         x: (game.grid.w / 4) * (i + 1),
-        y: (game.grid.h / 2) - 50,
+        y: (game.grid.h / 2) - 150,
         text: text,
         size_enum: 4,
         alignment_enum: 1
@@ -190,7 +198,7 @@ class Scene
 
     game.outputs.labels << {
       x: (game.grid.w / 2),
-      y: (game.grid.h / 2) - 150,
+      y: (game.grid.h / 2) - 200,
       text: "Use Arrows/WASD to move. Press SPACEBAR to start",
       size_enum: 4,
       alignment_enum: 1
