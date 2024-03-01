@@ -125,3 +125,4 @@ def tick_gameplay(game)
 end
 
 $gtk.reset
+$gtk.disable_console

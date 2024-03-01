@@ -3,7 +3,7 @@ devid=t27duck
 devtitle=Tony Drake
 gameid=nibbles
 gametitle=Nibbles
-version=0.1
+version=0.1.0
 icon=metadata/icon.png
 
 # === Flags available at all licensing tiers ===
