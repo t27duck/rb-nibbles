@@ -135,6 +135,7 @@ class Scene
   def self.render_title(game)
     Block.render(game, TITLE)
 
+    render_credits(game)
     render_level_menu(game)
   end
 
@@ -153,6 +154,7 @@ class Scene
       alignment_enum: 1
     }.merge(COLOR_TEXT_DARK)
 
+    render_credits(game)
     render_level_menu(game)
 
     game.outputs.labels << {
@@ -202,6 +204,16 @@ class Scene
       text: "Use Arrows/WASD to move. Press SPACEBAR to start",
       size_enum: 4,
       alignment_enum: 1
+    }.merge(COLOR_TEXT_DARK)
+  end
+
+  def self.render_credits(game)
+    game.outputs.labels << {
+      x: GRID_START_X,
+      y: game.grid.h - 10,
+      text: "Created by t27duck",
+      size_enum: 5,
+      anchor_x: 0
     }.merge(COLOR_TEXT_DARK)
   end
 end

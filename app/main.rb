@@ -121,7 +121,7 @@ def tick_gameplay(game)
   Block.render(game, game.state.body)
   Block.render(game, game.state.food, size: :small)
   Block.render(game, WALLS[game.state.level], size: :full, color: COLOR_WALL)
-  Stage.render_score(game)
+  Stage.render_score_and_level(game)
 end
 
 $gtk.reset

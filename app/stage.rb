@@ -71,11 +71,19 @@ class Stage
     }.merge(COLOR_GAME_FIELD)
   end
 
-  def self.render_score(game)
+  def self.render_score_and_level(game)
     game.outputs.labels << {
       x: GRID_START_X,
-      y: GRID_START_Y - 5,
+      y: game.grid.h - 10,
       text: "Score: #{game.state.score}",
+      size_enum: 5,
+      anchor_x: 0
+    }.merge(COLOR_TEXT_DARK)
+
+    game.outputs.labels << {
+      x: game.grid.w - GRID_START_X - 120,
+      y: game.grid.h - 10,
+      text: "Level: #{game.state.level}",
       size_enum: 5,
       anchor_x: 0
     }.merge(COLOR_TEXT_DARK)
