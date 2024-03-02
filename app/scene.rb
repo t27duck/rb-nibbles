@@ -201,7 +201,7 @@ class Scene
     game.outputs.labels << {
       x: (game.grid.w / 2),
       y: (game.grid.h / 2) - 200,
-      text: "Use Arrows/WASD to move. Press SPACEBAR to start",
+      text: "Move: Arrows and WASD | Start: SPACEBAR | Pause: P",
       size_enum: 4,
       alignment_enum: 1
     }.merge(COLOR_TEXT_DARK)
@@ -214,6 +214,26 @@ class Scene
       text: "Created by t27duck",
       size_enum: 5,
       anchor_x: 0
+    }.merge(COLOR_TEXT_DARK)
+  end
+
+  def self.render_pause_screen(game)
+    Block.render(game, TITLE)
+
+    game.outputs.labels << {
+      x: (game.grid.w / 2),
+      y: (game.grid.h / 2) - 100,
+      text: "Game Paused",
+      size_enum: 4,
+      alignment_enum: 1
+    }.merge(COLOR_TEXT_DARK)
+
+    game.outputs.labels << {
+      x: (game.grid.w / 2),
+      y: (game.grid.h / 2) - 200,
+      text: "Press SPACEBAR to resume",
+      size_enum: 4,
+      alignment_enum: 1
     }.merge(COLOR_TEXT_DARK)
   end
 end

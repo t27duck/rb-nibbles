@@ -44,6 +44,12 @@ def tick_title(game)
   reset_and_start_game(game) if game.inputs.keyboard.key_down.space
 end
 
+def tick_pause(game)
+  Scene.render_pause_screen(game)
+
+  game.state.scene = "countdown" if game.inputs.keyboard.key_down.space
+end
+
 def tick_gameover(game)
   Scene.render_gameover(game)
 
@@ -67,18 +73,24 @@ end
 def tick_countdown(game)
   game.state.countdown_wait -= 1
   if game.state.countdown_wait <= 0
+    game.state.countdown_wait = COUNTDOWN_WAIT
     game.state.countdown -= 1
     if game.state.countdown < 0
+      game.state.countdown = 2
       game.state.scene = "gameplay"
       return
     end
-    game.state.countdown_wait = COUNTDOWN_WAIT
   end
 
   Scene.render_countdown(game)
 end
 
 def tick_gameplay(game)
+  if game.inputs.keyboard.key_down.p
+    game.state.scene = "pause"
+    return
+  end
+
   Player.change_direction_on_input(game)
 
   game.state.move_wait -= 1
